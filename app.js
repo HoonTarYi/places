@@ -3,6 +3,8 @@ const express = require('express');
 const hbs = require('hbs');
 const bodyParser = require('body-parser');
 const server = express();
+const path = require('path');
+const filemgr = require('./filemgr');
 
 const port = process.env.PORT || 3000;
 
@@ -27,6 +29,8 @@ hbs.registerHelper('list',(items,options) => {
   return out;
 });
 
+server.use(express.static(path.join(__dirname,'public')));
+
 server.get('/',(req,res) => {
   res.render('home.hbs');
 });
@@ -35,11 +39,22 @@ server.get('/form',(req,res) => {
   res.render('form.hbs');
 });
 
+server.get('/historical',(req,res) => {
+  filemgr.getAllData().then((result) => {
+    filteredResults = result;
+  res.render('historical.hbs')
+
+}).catch((errorMessage) => {
+              console.log(errorMessage);
+
+});
+  });
 
 server.post('/getplaces',(req,res) => {
   const addr = req.body.address;
   const placetype = req.body.placetype;
   const name = req.body.name;
+
   const locationReq = `https://maps.googleapis.com/maps/api/geocode/json?address=${addr}&key=AIzaSyCXxsiK79-DXha-afMjHuLwohgNaSmRpXY`;
 
 axios.get(locationReq).then((response) => {
@@ -56,8 +71,16 @@ const placesReq = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?
 
   filteredResults = extractData(response.data.results);
 
-  //res.status(200).send(filteredResults);
-  res.render('results.hbs');
+  filemgr.saveData(filteredResults).then((result) =>{
+
+    //res.status(200).send(filteredResults);
+    res.render('results.hbs');
+
+  }).catch((erorMessage)=> {
+      console.log(errorMessage);
+  });
+
+
 }).catch((error) => {
   console.log(error);
 });
@@ -85,7 +108,7 @@ const extractData = (originalResults) => {
       tempObj = {
         name:originalResults[i].name,
         address: originalResults[i].vicinity,
-        photo_reference: "http://www.a1delidelights.com.au/wp-content/uploads/2017/08/noimagefound.png",
+        photo_reference: '/noimage.png',
       }
     }
     placesObj.table.push(tempObj);

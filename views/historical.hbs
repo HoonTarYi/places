@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Historical Search</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+{{> navbar}}
+
+<div class="jumbotron text-center">
+  <h1>Historical Search</h1>
+  <p>Previous Search</p>
+</div>
+
+<div class="row container-fluid">
+  <table class="table table-striped">
+    {{#list items}} <tr><td>{{name}}</td><td>{{address}}</td><td><img src={{photo_reference}} width="400" length="400">  </td></tr>{{/list}}
+    </table>
+</div>
+
+</body>
+</html>
