@@ -6,6 +6,7 @@ const server = express();
 const path = require('path');
 const filemgr = require('./filemgr');
 
+
 const port = process.env.PORT || 3000;
 
 server.use(bodyParser.urlencoded({extended:true}));
@@ -63,6 +64,16 @@ axios.get(locationReq).then((response) => {
     lat: response.data.results[0].geometry.location.lat,
     lng: response.data.results[0].geometry.location.lng,
   }
+
+  server.post('/delete', (req,res) => {
+    filemgr.deleteAll().then((result) => {
+      filteredResults = result;
+      res.render("historical.hbs");
+    }).catch((errorMessage) => {
+      console.log(errorMessage);
+    });
+  });
+
 
 const placesReq = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${locationData.lat},${locationData.lng}&radius=1500%20&types=${placetype}%20&name=${name}&key=${PLACES_API_KEY}`;
 

@@ -68,7 +68,7 @@ const deleteAll = ()  => {
       console.log('Connected to MongoDB');
       const db = client.db(appname);
 
-      db.collection(collectioname).remove({}).then( (result) => {
+      db.collection(collectionname).remove({}).then( (result) => {
         resolve(result);
       },(err) => {
         reject('Unable to delete');
