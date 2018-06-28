@@ -4,7 +4,7 @@ const fs = MongoClient;
 // const database = 'mongodb://localhost:27017';
 const database ='mongodb://places:hayate972:D@ds121301.mlab.com:21301/placesapp97';
 
-const appname ='placesapp97';
+const appname ='places';
 const collectionname ='placesappcollection';
 const saveData = (newdata) =>  {
   return new Promise((resolve,reject) => {
