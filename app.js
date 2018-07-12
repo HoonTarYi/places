@@ -4,7 +4,8 @@ const hbs = require('hbs');
 const bodyParser = require('body-parser');
 const server = express();
 const path = require('path');
-const filemgr = require('./filemgr');
+// const filemgr = require('./filemgr');
+const Place = require('./Place')
 
 
 const port = process.env.PORT || 5000;
@@ -40,16 +41,16 @@ server.get('/form',(req,res) => {
   res.render('form.hbs');
 });
 
-server.get('/historical',(req,res) => {
-  filemgr.getAllData().then((result) => {
-    filteredResults = result;
-  res.render('historical.hbs')
-
-}).catch((errorMessage) => {
-              console.log(errorMessage);
-
+server.post('/historical',(req,res) => {
+  Place.find({})
+  .then((result) => {
+    res.status(200).send(result);
+  })
+  .catch((error) => {
+    res.status(400).send(error);
+  })
 });
-  });
+
 
 server.post('/getplaces',(req,res) => {
   const addr = req.body.address;
@@ -66,12 +67,13 @@ axios.get(locationReq).then((response) => {
   }
 
   server.post('/delete', (req,res) => {
-    filemgr.deleteAll().then((result) => {
-      filteredResults = result;
-      res.render("historical.hbs");
-    }).catch((errorMessage) => {
-      console.log(errorMessage);
-    });
+    Place.remove({})
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((error) => {
+        res.status(400).send(error);
+      })
   });
 
 
@@ -82,14 +84,13 @@ const placesReq = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?
 
   filteredResults = extractData(response.data.results);
 
-  filemgr.saveData(filteredResults).then((result) =>{
-
-    //res.status(200).send(filteredResults);
-    res.render('results.hbs');
-
-  }).catch((erorMessage)=> {
-      console.log(errorMessage);
-  });
+   Place.insertMany(filteredResults)
+   .then((result) => {
+      res.status(200).send(result);
+   })
+   .catch((error) => {
+     res.status(400).send(error);
+   })
 
 
 }).catch((error) => {
