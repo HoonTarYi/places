@@ -1,12 +1,37 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+import qs from 'qs';
+import Result from './Result';
 
 class Form extends Component {
+  constructor() {
+    super();
+    this.state = {
+     addr:'',
+     name:'',
+     result: []
+   };
+
+   this.onChange = this.onChange.bind(this);
+   this.onSubmit = this.onSubmit.bind(this);
+  }
+
+  onChange(e) {
+    this.setState({[e.target.name]: e.target.value});
+  }
 
   onSubmit(e) {
     e.preventDefault();
 
-    axios.post('http://localhost:5000/getplaces', newQuery).then((result) =>{
+    const newQuery = {
+      address: this.state.addr,
+      name: this.state.name,
+      placetype: this.state.placetype
+    };
 
+    axios.post('/getplaces',qs.stringify(newQuery))
+    .then((result) =>{
+      this.setState({result: result.data});
     })
     .catch((err) => {
       console.log(err);
@@ -25,14 +50,36 @@ class Form extends Component {
             <form onSubmit={this.onSubmit}>
               <div className="form-group">
                 <label htmlFor="addr">Enter address:</label>
-                <input id="addr" name="address" className="form-control" type="text" placeholder="Enter address..."/>
+                <input
+                id="addr"
+                name="addr"
+                className="form-control"
+                type="text"
+                placeholder="Enter address..."
+                value={this.state.addr}
+                onChange={this.onChange}
+                />
                 <p></p>
                 <label htmlFor="name">Enter name:</label>
-                <input id="name" name="name" className="form-control" type="text" placeholder="Enter name..."/>
+                <input
+                id="name"
+                name="name"
+                className="form-control"
+                type="text"
+                placeholder="Enter name..."
+                value={this.state.name}
+                onChange={this.onChange}
+                />
                 <p></p>
                 <label htmlFor="places-type">Select type of place:</label>
                 <p></p>
-                  <select id="places-type" name="placetype" className="form-control">
+                  <select
+                  id="places-type"
+                  name="placetype"
+                  className="form-control"
+                  value={this.state.placetype}
+                  onChange={this.onChange}
+                  >
                   <option value="accounting">accounting</option>
                   <option value="airport">airport</option>
                   <option value="amusement_park">amusement_park</option>
@@ -132,6 +179,7 @@ class Form extends Component {
             </form>
           </div>
         </div>
+        <Result list={this.state.result} />
       </div>
 
     );
